@@ -137,3 +137,5 @@ _*.ipynb
 
 wandb/
 *.py.lock
+
+data

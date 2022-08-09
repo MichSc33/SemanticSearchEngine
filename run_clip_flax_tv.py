@@ -58,7 +58,6 @@ from torchvision.transforms import (
     Resize
 )
 from torchvision.transforms.functional import InterpolationMode
-
 import jax
 import jax.profiler
 import jax.numpy as jnp
@@ -80,7 +79,6 @@ from transformers import (
     TrainingArguments,
     is_tensorboard_available,
     IntervalStrategy
-    
 )
 from transformers.testing_utils import CaptureLogger
 
@@ -303,10 +301,14 @@ class ImageTextDataset(VisionDataset):
             prefix = "textaug_"
         else:
             prefix = ""
+        print(root)
+        print(split)
+        print(root + "/" + f"{prefix}{split}*.jsonl")
         filepaths = Path(root).glob(f"{prefix}{split}*.jsonl")
         self.captions = []
         self.image_paths = []
         for count, filepath in enumerate(filepaths):
+            print(filepath)
             with jsonlines.open(filepath, "r") as reader:
                 for example in reader:
                     self.captions.extend(example["captions"][:captions_per_image])
@@ -424,7 +426,6 @@ def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
-
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments, ImageAugmentationArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
@@ -518,7 +519,6 @@ def main():
         augment_captions=data_args.augment_captions,
         transform=preprocess,
     )
-
     eval_dataset = ImageTextDataset(
         data_args.data_dir,
         "valid",

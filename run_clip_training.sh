@@ -1,9 +1,9 @@
 #! /bin/bash
 ./run_clip_flax.py \
-    --output_dir $HOME/models/clip-rsicd \
+    --output_dir output \
     --model_name_or_path openai/clip-vit-base-patch32 \
     --dataset_name $HOME/CLIP-rsicd/rsicd.py \
-    --data_dir /home/shared/data \
+    --data_dir data \
     --text_column_name sentences \
     --do_train --do_eval \
     --per_device_train_batch_size="128" \
