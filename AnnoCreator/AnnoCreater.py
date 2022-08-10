@@ -32,23 +32,36 @@ class AnnoCreator:
         mappings = self._getImgPaths(annos["Image File Name"],
                                      dataPaths)
 
-
+        annos["Img Path"] = mappings.values()
 
         train, test = train_test_split(annos,
                                        train_size=self.TRAIN_TEST_SPLIT[0],
                                        test_size=self.TRAIN_TEST_SPLIT[1])
 
 
-    def _
+    def _processAnnos(self,
+                      annos):
+        return 0
+
+    def _writeAnnos2JsonLine(self,
+                             annos):
+        return 0
+
+    def _convertImgs(self,
+                     annos):
+
 
     def _loadAnnoTxt(self):
-        annosRaw = pd.read_csv(self.TEXT_ANNO_PATH, header=0)
+        annosRaw = pd.read_csv(self.TEXT_ANNO_PATH,
+                               header=0)
         digits = len(str(annosRaw.__len__()))
-        return pd.concat([pd.Series([str(i).zfill(digits) for i in range(annosRaw.__len__())]),
+        annos = pd.concat([pd.Series([str(i).zfill(digits) for i in range(annosRaw.__len__())]),
                           annosRaw["Serial Number Painting"],
                           annosRaw["Image File Name"],
                           annosRaw["Decoration"]],
                           axis=1)
+        annos.index = annosRaw["Serial Number Painting"]
+        return annos
 
     def _writeAnnos2jLine(self,
                           file,
