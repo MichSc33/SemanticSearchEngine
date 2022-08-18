@@ -10,6 +10,8 @@ python3 run_clip_flax_tv.py \
                               --per_device_train_batch_size="256" \
                               --preprocessing_num_workers="16" \
                               --learning_rate="2e-6" \
+                              --train_file="./data/textaug_train_rsicd.jsonl" \
+                              --validation_file="./data/valid_rsicd.jsonl" \
                               --adafactor false \
                               --warmup_steps="50" \
                               --adam_beta1="0.9" \
@@ -30,7 +32,7 @@ python3 run_clip_flax_tv.py \
                               --save_optimizer="False" \
                               --captions_per_image 1 \
                               --augment_images true \
-                              --augment_captions true
+                              --augment_captions true \
                               # --run_name="test_run" \
                               # --resume_from_checkpoint $HOME/gpt-neo-125M-code-clippy/ckpt_201 \
                               # --max_train_samples 10240 \

@@ -20,6 +20,8 @@ parts/
 sdist/
 var/
 wheels/
+App/openai
+App/flax-community
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/

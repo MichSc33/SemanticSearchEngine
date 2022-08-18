@@ -1,7 +1,9 @@
+import jsonlines
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import os
 from os.path import sep
+from PIL import Image, UnidentifiedImageError
 
 #utils
 
@@ -11,7 +13,8 @@ from AnnoCreatorUtils import _collectNestedData, \
                              _writeMappings2TXT, \
                              _loadMappingsFromTXT, \
                              _getDictKeys, \
-                             _matchPaths2Annos
+                             _matchPaths2Annos, \
+                             _checkMappings
 
 class AnnoCreator:
     def __init__(self,
@@ -28,33 +31,42 @@ class AnnoCreator:
         self.TEXT_ANNO_PATH = textAnnoPath
         self.TRAIN_TEST_SPLIT = trainTestSplit
         self.J_LINE_PATH = jLinePath
+        self.IMG_CONVERSION_EXCPS = set()
         assert len(self.TRAIN_TEST_SPLIT) == 2, "Train/Val/Test should be three values"
         assert (self.TRAIN_TEST_SPLIT[0] + self.TRAIN_TEST_SPLIT[1]) == 1, "Shares do not some up to 1"
 
     def createDataset(self):
         self._createDirs()
         annos = self._loadAnnoTxt()
-        dataPaths, dataTypes = _collectNestedData(self.IMG_DIR)
-
+        #dataPaths, dataTypes = _collectNestedData(self.IMG_DIR)
+        dataPaths = None
         mappings = self._getImgPaths(annos["Image File Name"],
                                      dataPaths)
 
-        annos = _matchPaths2Annos(annos,
-                                  mappings)
+        _checkMappings(mappings)
 
+        #annos = _matchPaths2Annos(annos,
+        #                          mappings)
 
+        #self._convertImgs(annos)
 
         train, test = train_test_split(annos,
                                        train_size=self.TRAIN_TEST_SPLIT[0],
                                        test_size=self.TRAIN_TEST_SPLIT[1])
+        self._createJsonLine(train,
+                             "train")
 
+        self._createJsonLine(test,
+                             "test")
 
-    def _processAnnos(self,
-                      annos,
-                      purpose):
-        with open('output.jsonl', 'w') as outfile:
-            for row in annos.rows():
-                a = 0
+    def _createJsonLine(self,
+                        annos,
+                        name):
+        with jsonlines.open(name + ".jsonl", "w") as fw:
+            items = [{"filename": idx + "." + self.OUTPUT_FORMAT,
+                      "captions": [anno["Decoration"]]} for idx, anno in annos.iterrows()]
+            fw.write_all(items)
+            fw.close()
 
     def _createDirs(self):
         if not os.path.exists(self.PROJECT_NAME):
@@ -62,14 +74,6 @@ class AnnoCreator:
 
     def _getImgDir(self):
         return "./" + self.PROJECT_NAME
-
-    def _writeAnnos2JsonLine(self,
-                             annos):
-        return 0
-
-    def _convertImgs(self,
-                     annos):
-        return 0
 
     def _loadAnnoTxt(self):
         annosRaw = pd.read_csv(self.TEXT_ANNO_PATH,
@@ -83,14 +87,6 @@ class AnnoCreator:
         annos.index = annosRaw["Serial Number Painting"]
         return annos
 
-    def _writeAnnos2jLine(self,
-                          file,
-                          splitTag):
-        return 0
-
-    def getJLinePath(self,
-                     purpose):
-        return os.path.curdir + sep + "data" + sep
 
     def _getImgPaths(self,
                      imgNames,
@@ -123,6 +119,49 @@ class AnnoCreator:
 
             print("Mapping loaded!")
 
-        return _getDictKeys(mapping,
-                            0)
 
+        return mapping
+
+
+    def _convertImg(self,
+                    anno,
+                    f):
+        try:
+            img = Image.open(anno[1]["Img Path"].split("|")[0]).convert("RGB")
+            self._getImgName(anno)
+            img.save(self._getImgPath(anno))
+        except AttributeError as ae:
+            f.write(ae.args[0] + ":" + anno[1]["Image File Name"] + "\n")
+        except IndexError as idxe:
+            f.write(idxe.args[0] + ":" + anno[1]["Image File Name"] + "\n")
+        except Exception as e:
+            f.write(e.args[0] + ":" + anno[1]["Image File Name"] + "\n")
+
+
+
+
+    def _getImgPath(self,
+                    anno):
+        return os.path.join(self.PROJECT_NAME,
+                            self._getImgName(anno))
+    def _getImgName(self,
+                    anno):
+        return anno[1]["0"] + "." + self.OUTPUT_FORMAT
+
+    def _convertImgs(self,
+                     annos):
+        i, n = 0, len(annos)
+        _statusPrinter(True,
+                       "Convert Imgs")
+        with open("failures.txt", "w") as f:
+            for anno in annos.iterrows():
+                _printProgress(i,
+                               n,
+                               "Convert",
+                               "Imgs")
+                self._convertImg(anno,
+                                 f)
+                i += 1
+            _statusPrinter(False,
+                           "Convert Imgs")
+            f.close()

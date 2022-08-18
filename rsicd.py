@@ -98,6 +98,7 @@ class NewDataset(datasets.GeneratorBasedBuilder):
         # data_dir = dl_manager.download_and_extract(my_urls)
         data_dir = self.config.data_dir
         with open(f"{data_dir}/dataset_rsicd.json") as f:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + f"{data_dir}/dataset_rsicd.json")
             ds = json.load(f)
         _items = defaultdict(list)
         for e in ds["images"]:

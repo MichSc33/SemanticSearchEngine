@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import pandas as pd
+import numpy as np
+import math
 from PIL import Image
 
 def _printProgress(i,
@@ -25,9 +27,10 @@ def _collectNestedData(path,
             dirs.append(os.path.join(path, file))
         else:
             if file.split(".")[-1] in ["tif", "jpg", "tiff", "jpeg", "JPG", "png", "TIF"]:
-                dataPaths.append(os.path.join(path, file))
-                if not file.split(".")[-1] in dataTypes:
-                    dataTypes.add(file.split(".")[-1])
+                if file[0:2] != "._":
+                    dataPaths.append(os.path.join(path, file))
+                    if not file.split(".")[-1] in dataTypes:
+                        dataTypes.add(file.split(".")[-1])
     for dir in dirs:
         newDataPaths, newDataTypes = _collectNestedData(dir)
         dataPaths += newDataPaths
@@ -37,9 +40,9 @@ def _collectNestedData(path,
 def _statusPrinter(start,
                    process):
     if start:
-        print("Start: {} ...".format(process))
+        print("Start: {}...".format(process))
     else:
-        print("End: {} ...".format(process))
+        print("End: {}...".format(process))
 
 
 def _loadMappingsFromTXT():
@@ -59,6 +62,12 @@ def _getDictKeys(dct,
         except IndexError as idxe:
             newDct[key] = None
     return newDct
+def _checkMappings(mappings):
+    with open("missings.csv", "w") as f:
+        for key, val in mappings.items():
+            if len(val) == 0:
+                f.write(key + "\n")
+        f.close()
 
 def _matchPaths2Annos(annos,
                      mappings):
@@ -72,23 +81,25 @@ def _matchPaths2Annos(annos,
                            n,
                            "Path to Annos",
                            "Path")
-            annos.loc[annos['Image File Name'] == key, "Img Path"] = val
+            annos.loc[annos['Image File Name'] == key, "Img Path"] = "|".join(val)
             i += 1
         _statusPrinter(False,
                        "Map Path to Annos")
         annos.to_csv("annos.txt")
     else:
        print("Annos already created!")
-       annos = pd.read_csv("annos.txt", sep=",")
+       annos = pd.read_csv("annos.txt", sep=",annos")
+       digits = len(str(len(annos)))
+       annos["0"] = [str(i).zfill(digits) for i in range(len(annos))]
        print("Annos loaded!")
     return annos
 
-def _convertImg(imgPath):
-    try:
-        Image.open(imgPath)
 
-def _convertImgs(annos):
-    for anno in annos.iterrows():
+
+
+
+
+
 
 
 

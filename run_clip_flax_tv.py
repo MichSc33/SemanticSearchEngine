@@ -301,14 +301,10 @@ class ImageTextDataset(VisionDataset):
             prefix = "textaug_"
         else:
             prefix = ""
-        print(root)
-        print(split)
-        print(root + "/" + f"{prefix}{split}*.jsonl")
         filepaths = Path(root).glob(f"{prefix}{split}*.jsonl")
         self.captions = []
         self.image_paths = []
         for count, filepath in enumerate(filepaths):
-            print(filepath)
             with jsonlines.open(filepath, "r") as reader:
                 for example in reader:
                     self.captions.extend(example["captions"][:captions_per_image])
@@ -431,6 +427,7 @@ def main():
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
         model_args, data_args, training_args, augmentation_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+        print(training_args)
     else:
         model_args, data_args, training_args, augmentation_args = parser.parse_args_into_dataclasses()
 
@@ -523,7 +520,7 @@ def main():
         data_args.data_dir,
         "valid",
         captions_per_image=1,
-        augment_captions=False, 
+        augment_captions=True,
         transform=eval_preprocess,
     )
 
@@ -853,9 +850,6 @@ def main():
         commit_message=f"Saving weights and logs at step {cur_step}",
         repo_name_or_path=training_args.output_dir
     )
-
-
-
 
 if __name__ == "__main__":
     main()
