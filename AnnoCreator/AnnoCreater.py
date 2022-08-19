@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import os
 from os.path import sep
-from PIL import Image, UnidentifiedImageError
+
 
 #utils
 
@@ -14,7 +14,9 @@ from AnnoCreatorUtils import _collectNestedData, \
                              _loadMappingsFromTXT, \
                              _getDictKeys, \
                              _matchPaths2Annos, \
-                             _checkMappings
+                             _checkMappings, \
+                             _cropAlpha, \
+                             _removeBackground
 
 class AnnoCreator:
     def __init__(self,
@@ -57,27 +59,6 @@ class AnnoCreator:
 
         self._createJsonLine(test,
                              "test")
-
-    def _removeBackground(self,
-                          imgArr):
-        import matplotlib
-        from rembg.bg import remove
-        import numpy as np
-        import io
-        from PIL import Image
-
-            ImageFile.LOAD_TRUNCATED_IMAGES = True
-
-            f = np.fromfile(input_path)
-            result = remove(f)
-            img = Image.open(io.BytesIO(result)).convert("RGBA")
-            img.save(output_path)
-
-        # Press the green button in the gutter to run the script.
-        if __name__ == '__main__':
-            print_hi('PyCharm')
-
-        # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
     def _createJsonLine(self,
                         annos,

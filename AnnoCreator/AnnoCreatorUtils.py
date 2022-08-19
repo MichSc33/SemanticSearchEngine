@@ -5,6 +5,19 @@ import pandas as pd
 import numpy as np
 import math
 from PIL import Image
+from PIL import Image, UnidentifiedImageError
+from rembg.bg import remove
+import numpy as np
+import io
+from PIL import Image, ImageFile
+
+def _cropAlpha(imgArr):
+    return
+
+def _removeBackground(imgArr):
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    result = remove(imgArr)
+    return Image.open(io.BytesIO(result)).convert("RGBA")
 
 def _printProgress(i,
                   n,
