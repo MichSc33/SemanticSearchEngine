@@ -1,8 +1,16 @@
+import sys
+import os
+import pkg_resources
+from pprint import pprint
 
-import jsonlines
-with jsonlines.open("./AnnoCreator/test.jsonl", "r") as reader:
-    line = next(iter(reader))
-    print(f"filename: {line['filename']}\n")
-    print("captions:")
-    for i, caption in enumerate(line["captions"]):
-        print(f"{i+1}) {caption}")
+
+pprint({
+    #'sys.version_info': sys.version_info,
+    #'sys.prefix': sys.prefix,
+    #'sys.path': sys.path,
+    #'pkg_resources.working_set': list(pkg_resources.working_set),
+        'os.environ': {
+        name: value.split(os.pathsep) if 'PATH' in name else value
+        for name, value in os.environ.items()
+    },
+})

@@ -38,17 +38,16 @@ class AnnoCreator:
     def createDataset(self):
         self._createDirs()
         annos = self._loadAnnoTxt()
-        #dataPaths, dataTypes = _collectNestedData(self.IMG_DIR)
-        dataPaths = None
+        dataPaths, dataTypes = _collectNestedData(self.IMG_DIR)
         mappings = self._getImgPaths(annos["Image File Name"],
                                      dataPaths)
 
         _checkMappings(mappings)
 
-        #annos = _matchPaths2Annos(annos,
-        #                          mappings)
+        annos = _matchPaths2Annos(annos,
+                                  mappings)
 
-        #self._convertImgs(annos)
+        self._convertImgs(annos)
 
         train, test = train_test_split(annos,
                                        train_size=self.TRAIN_TEST_SPLIT[0],
@@ -58,6 +57,27 @@ class AnnoCreator:
 
         self._createJsonLine(test,
                              "test")
+
+    def _removeBackground(self,
+                          imgArr):
+        import matplotlib
+        from rembg.bg import remove
+        import numpy as np
+        import io
+        from PIL import Image
+
+            ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+            f = np.fromfile(input_path)
+            result = remove(f)
+            img = Image.open(io.BytesIO(result)).convert("RGBA")
+            img.save(output_path)
+
+        # Press the green button in the gutter to run the script.
+        if __name__ == '__main__':
+            print_hi('PyCharm')
+
+        # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
     def _createJsonLine(self,
                         annos,

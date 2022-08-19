@@ -20,7 +20,10 @@ Here is the full list of checkpoints on the hub that can be fine-tuned by this s
 https://huggingface.co/models?filter=causal-lm
 """
 # You can also adapt this script on your own causal language modeling task. Pointers for this are left as comments.
-
+import sys
+sys.path.append('/scratch1/users/schlee2/Dissertation/SemanticSearchEngine/src/datasets/src')
+sys.path.append('/scratch1/users/schlee2/Dissertation/SemanticSearchEngine/src/transformers/src')
+print(sys.path)
 import logging
 import math
 import os
@@ -33,8 +36,10 @@ import json
 import jsonlines
 import shutil
 import numpy as np
+import pkgutil
 
 import datasets
+
 from datasets import Dataset, load_dataset
 from flax import training
 from tqdm import tqdm

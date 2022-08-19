@@ -1,6 +1,6 @@
 #! /bin/bash
 #source ~/ownCloud/PycharmProjects/SemanticSearchEngine/bin/activate
-python3 run_clip_flax_tv.py \
+python run_clip_flax_tv.py \
                               --output_dir ./output \
                               --model_name_or_path openai/clip-vit-base-patch32 \
                               --dataset_name $HOME/CLIP-rsicd/rsicd.py \
